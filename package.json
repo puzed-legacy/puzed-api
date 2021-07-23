@@ -30,7 +30,7 @@
     "is-ip": "^3.1.0",
     "jsonwebtoken": "^8.5.1",
     "memoizee": "^0.4.15",
-    "mql-to-jql": "^1.1.9",
+    "mql-to-jql": "^1.3.0",
     "ndjson-fe": "^1.2.10",
     "notify-over-http": "^2.0.3",
     "pbkdf2-wrapper": "^1.3.2",
