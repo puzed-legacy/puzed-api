@@ -37,7 +37,7 @@
     "presh": "^3.0.2",
     "prompts": "^2.4.1",
     "read-last-lines": "^1.8.0",
-    "routemeup": "^2.0.1",
+    "routemeup": "^2.0.2",
     "skeddy": "^1.0.1",
     "socksv5": "file:vendor/socksv5",
     "tar-fs": "^2.1.1",
