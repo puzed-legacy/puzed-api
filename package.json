@@ -19,7 +19,7 @@
     "canhazdb-driver-ejdb": "^1.1.4",
     "canhazdb-server": "^7.0.2",
     "chalk": "^4.1.1",
-    "date-fns": "^2.22.1",
+    "date-fns": "^2.23.0",
     "execa": "^5.1.1",
     "final-stream": "^2.0.4",
     "get-port": "^5.1.1",
