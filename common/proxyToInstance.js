@@ -99,8 +99,7 @@ async function proxyHttpToInstance ({ db }, request, response) {
 function proxyWebsocketToInstance ({ db, config, settings }) {
   return function (request, socket, head) {
     const proxy = httpProxy.createProxyServer({
-      target: `${config.clientUrl}${request.url}`.replace('http', 'ws'),
-      ws: true
+      target: `${config.clientUrl}${request.url}`
     });
     proxy.ws(request, socket, head);
   };
