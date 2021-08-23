@@ -70,15 +70,13 @@ async function getProxyTarget ({ db }, request) {
 
 async function proxyHttpToInstance ({ db }, request, response) {
   const [proxyTargetRejection, proxyTarget] = await getProxyTarget({ db }, request);
-  const server = proxyTarget.server;
-  const instance = proxyTarget.instance;
+  const server = proxyTarget && proxyTarget.server;
+  const instance = proxyTarget && proxyTarget.instance;
   if (proxyTargetRejection) {
     response.writeHead(proxyTargetRejection.statusCode);
     response.end(proxyTargetRejection.message);
     return;
   }
-
-  
 
   const proxyRequest = http.request(`http://${server.hostname}:${instance.dockerPort}${request.url}`, {
     method: request.method,
@@ -110,8 +108,8 @@ async function proxyHttpToInstance ({ db }, request, response) {
 function proxyWebsocketToInstance ({ db }) {
   return async function (request, socket, head) {
     const [proxyTargetRejection, proxyTarget] = await getProxyTarget({ db }, request);
-    const server = proxyTarget.server;
-    const instance = proxyTarget.instance;
+    const server = proxyTarget && proxyTarget.server;
+    const instance = proxyTarget && proxyTarget.instance;
 
     if (proxyTargetRejection) {
       console.log('could not proxy websockets', proxyTargetRejection);
