@@ -8,7 +8,7 @@ async function getProxyTarget ({ db }, request) {
   const hostnameAndMaybePort = request.headers.host && request.headers.host.toLowerCase();
 
   if (!hostnameAndMaybePort) {
-    return [{ status: 404, message: 'no host specified found' }];
+    return [{ statusCode: 404, message: 'no host specified found' }];
   }
 
   let hostname = hostnameAndMaybePort.split(':')[0];
@@ -27,7 +27,7 @@ async function getProxyTarget ({ db }, request) {
   });
 
   if (!service) {
-    return [{ status: 404, message: `no service for host ${hostnameAndMaybePort} found` }];
+    return [{ statusCode: 404, message: `no service for host ${hostnameAndMaybePort} found` }];
   }
 
   const deployment = await db.getOne('deployments', {
@@ -38,7 +38,7 @@ async function getProxyTarget ({ db }, request) {
   });
 
   if (!deployment) {
-    return [{ status: 404, message: `no deployment for host ${hostnameAndMaybePort} found` }];
+    return [{ statusCode: 404, message: `no deployment for host ${hostnameAndMaybePort} found` }];
   }
 
   const instances = await db.getAll('instances', {
@@ -50,7 +50,7 @@ async function getProxyTarget ({ db }, request) {
   });
 
   if (instances.length === 0) {
-    return [{ status: 404, message: `no instances for host ${hostnameAndMaybePort} found` }];
+    return [{ statusCode: 404, message: `no instances for host ${hostnameAndMaybePort} found` }];
   }
 
   const instance = selectRandomItemFromArray(instances);
