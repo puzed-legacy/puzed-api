@@ -4,13 +4,11 @@ const selectRandomItemFromArray = require('./selectRandomItemFromArray');
 
 const httpProxy = require('http-proxy');
 
-async function proxyHttpToInstance ({ db }, request, response) {
+async function getProxyTarget ({ db }, request) {
   const hostnameAndMaybePort = request.headers.host && request.headers.host.toLowerCase();
 
   if (!hostnameAndMaybePort) {
-    response.writeHead(404);
-    response.end('no host specified found');
-    return;
+    return [{ status: 404, message: 'no host specified found' }];
   }
 
   let hostname = hostnameAndMaybePort.split(':')[0];
@@ -29,9 +27,7 @@ async function proxyHttpToInstance ({ db }, request, response) {
   });
 
   if (!service) {
-    response.writeHead(404);
-    response.end(`no service for host ${hostnameAndMaybePort} found`);
-    return;
+    return [{ status: 404, message: `no service for host ${hostnameAndMaybePort} found` }];
   }
 
   const deployment = await db.getOne('deployments', {
@@ -42,9 +38,7 @@ async function proxyHttpToInstance ({ db }, request, response) {
   });
 
   if (!deployment) {
-    response.writeHead(404);
-    response.end(`no deployment for host ${hostnameAndMaybePort} found`);
-    return;
+    return [{ status: 404, message: `no deployment for host ${hostnameAndMaybePort} found` }];
   }
 
   const instances = await db.getAll('instances', {
@@ -56,18 +50,33 @@ async function proxyHttpToInstance ({ db }, request, response) {
   });
 
   if (instances.length === 0) {
-    response.writeHead(404);
-    response.end(`no instances for host ${hostnameAndMaybePort} found`);
-    return;
+    return [{ status: 404, message: `no instances for host ${hostnameAndMaybePort} found` }];
   }
 
   const instance = selectRandomItemFromArray(instances);
 
-  const server = await db.getOne('servers', {
-    query: {
-      id: instance.serverId
+  return [
+    null,
+    {
+      server: db.getOne('servers', {
+        query: {
+          id: instance.serverId
+        }
+      }),
+      instance
     }
-  });
+  ];
+}
+
+async function proxyHttpToInstance ({ db }, request, response) {
+  const [proxyTargetRejection, proxyTarget] = await getProxyTarget({ db }, request);
+  const server = proxyTarget.server;
+  const instance = proxyTarget.instance;
+  if (proxyTargetRejection) {
+    response.writeHead(proxyTargetRejection.statusCode);
+    response.end(proxyTargetRejection.message);
+    return;
+  }
 
   const proxyRequest = http.request(`http://${server.hostname}:${instance.dockerPort}${request.url}`, {
     method: request.method,
@@ -96,10 +105,22 @@ async function proxyHttpToInstance ({ db }, request, response) {
   request.pipe(proxyRequest);
 }
 
-function proxyWebsocketToInstance ({ db, config, settings }) {
-  return function (request, socket, head) {
+function proxyWebsocketToInstance ({ db }) {
+  return async function (request, socket, head) {
+    const [proxyTargetRejection, proxyTarget] = await getProxyTarget({ db }, request);
+    const server = proxyTarget.server;
+    const instance = proxyTarget.instance;
+
+    if (proxyTargetRejection) {
+      console.log('could not proxy websockets', proxyTargetRejection);
+      return;
+    }
+
     const proxy = httpProxy.createProxyServer({
-      target: `${config.clientUrl}${request.url}`
+      target: {
+        hostname: server.hostname,
+        port: instance.dockerPort
+      }
     });
     proxy.ws(request, socket, head);
   };
