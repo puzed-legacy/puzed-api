@@ -58,7 +58,7 @@ async function getProxyTarget ({ db }, request) {
   return [
     null,
     {
-      server: db.getOne('servers', {
+      server: await db.getOne('servers', {
         query: {
           id: instance.serverId
         }
@@ -77,6 +77,8 @@ async function proxyHttpToInstance ({ db }, request, response) {
     response.end(proxyTargetRejection.message);
     return;
   }
+
+  
 
   const proxyRequest = http.request(`http://${server.hostname}:${instance.dockerPort}${request.url}`, {
     method: request.method,
