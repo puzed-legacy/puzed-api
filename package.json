@@ -35,7 +35,7 @@
     "notify-over-http": "^2.0.3",
     "pbkdf2-wrapper": "^1.3.4",
     "presh": "^3.0.2",
-    "prompts": "^2.4.1",
+    "prompts": "^2.4.2",
     "read-last-lines": "^1.8.0",
     "routemeup": "^2.0.2",
     "skeddy": "^1.0.1",
