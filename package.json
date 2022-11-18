@@ -16,7 +16,7 @@
     "@root/acme": "^3.1.0",
     "axios": "^0.27.2",
     "canhazdb-client": "^1.1.3",
-    "canhazdb-driver-ejdb": "^1.1.4",
+    "canhazdb-driver-ejdb": "^1.1.5",
     "canhazdb-server": "^7.0.2",
     "chalk": "^4.1.2",
     "date-fns": "^2.29.2",
