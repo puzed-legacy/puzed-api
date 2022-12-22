@@ -28,7 +28,7 @@
     "http-proxy": "^1.18.1",
     "ip": "^1.1.8",
     "is-ip": "^3.1.0",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "memoizee": "^0.4.15",
     "mql-to-jql": "^1.4.1",
     "ndjson-fe": "^1.2.10",
